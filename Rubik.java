@@ -8,6 +8,7 @@ import java.awt.Color; import java.awt.Font;
 import java.awt.event.MouseListener; import java.awt.event.MouseEvent;
 import java.awt.event.KeyListener; import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener; import java.awt.event.ActionEvent;
+import java.awt.FlowLayout; import java.awt.GridLayout;
 
 //Consider using abstraction to define color for cubes
 
@@ -19,60 +20,111 @@ public class Rubik extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(300,300);
         // setResizable(false);
+        setLayout(new GridLayout(1,2));
+        Canvas canvas = new Canvas();
+        add(canvas);
         
-        add(new Cube());
-		   
-
+        JButton bottomRight = new JButton("->");
+        bottomRight.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                canvas.bottomRight();
+            }
+        });
+        bottomRight.setVisible(true);
+        // bottomRight.setSize(getWidth()/5,getHeight());
+        add(bottomRight);
     }
 
     public static void main(String[] args) {
-        Rubik cube = new Rubik();
-        cube.setVisible(true);
+        Rubik rubik = new Rubik();
+        rubik.setVisible(true);
     }
 }
 
-class Cube extends JPanel {
+class Canvas extends JPanel {
 
     protected Color[][] colors = new Color[6][9];
     protected Color[] colorContruct = new Color[]{
-	Color.RED, Color.BLUE, Color.ORANGE,
+	Color.RED, Color.BLUE, new Color(255,100,0),
 	Color.GREEN, Color.WHITE, Color.YELLOW};
+    Color[] colorsLeft = new Color[9];
+    Color[] colorsRight= new Color[9];
+    Color[] colorsTop = new Color[9];
 
-    public Cube() {
+    public Canvas() {
         setBackground(Color.GRAY);
+        for (int i = 0; i < 6; i++)
+            Arrays.fill(colors[i],colorContruct[i]);
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        double startPosX = Math.min(getHeight(), getWidth())/12;
+        for (int i = 0; i < 9; i++)
+            colorsLeft[i] = colors[0][i];
+        for (int i = 0; i < 9; i++)
+            colorsRight[i] = colors[1][i];
+        for (int i = 0; i < 9; i++)
+            colorsTop[i] = colors[4][i];
+        double startPosX = Math.min(getHeight(), getWidth())/8;
         double length = startPosX/Math.cos(Math.PI/6);
         double startPosY = 3*startPosX+length/2;
-        LeftSide left = new LeftSide(startPosX, startPosY+5*length/2, length, Color.BLUE);
-        RightSide right = new RightSide(4*startPosX, startPosY+4*length, length, Color.BLACK);
-        TopSide top = new TopSide(startPosX, startPosY+length/2, length, Color.BLACK);
+        LeftSide left = new LeftSide(startPosX, startPosY+5*length/2, length, colorsLeft);
+        RightSide right = new RightSide(4*startPosX, startPosY+4*length, length, colorsRight);
+        TopSide top = new TopSide(startPosX*3, startPosY+length*3/2, length, colorsTop);
         top.paintComponent(g);
         left.paintComponent(g);
         right.paintComponent(g);
     }
+
+    public void bottomRight(){
+        for (int i = 6; i < 9; i++){
+            Color tmp = colors[3][i];
+            for (int j = 2; j >= 0; j--)
+                colors[j+1][i] = colors[j][i];
+            colors[0][i] = tmp;
+        }
+        repaint();
+    }
+    public void bottomLeft(){
+        for (int i = 6; i < 9; i++){
+            Color tmp = colors[0][i];
+            for (int j = 0; j < 4; j++)
+                colors[j][i] = colors[j+1][i];
+            colors[4][i] = tmp;
+        }
+        repaint();
+    }
+    public void midRight(){}
+    public void midLeft(){}
+    public void topRight(){}
+    public void topLeft(){}
+    public void leftDown(){}
+    public void leftUp(){}
+    public void midDown(){}
+    public void midUp(){}
+    public void rightDown(){}
+    public void rightUp(){}
 }
 
 class LeftSide extends JComponent {
     protected double length, X, Y;
-    protected Color color;
+    protected Color[] colors = new Color[9];
 
-    public LeftSide(double X, double Y, double length, Color color){
-        this.length = length; this.color = color;
+    public LeftSide(double X, double Y, double length, Color[] colors){
+        this.length = length; this.colors = colors.clone();
         this.X = X; this.Y = Y;
     }
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (double i = 0; i < 3; i++) {
-            double TLY = Y + length*Math.sin(Math.PI/6)*i, TLX = X + length*Math.cos(Math.PI/6)*i;
-            for (double j = 0; j < 3; j++) {
-                ParaLeft side = new ParaLeft(TLX,TLY,length,color);
+        for (int i = 0; i < 3; i++) {
+            double TLX = X, TLY = Y+length*i;
+            for (int j = 0; j < 3; j++) {
+                ParaLeft side = new ParaLeft(TLX,TLY,length,colors[i*3+j]);
                 side.paintComponent(g);
-                TLY -= length;
+                TLY += length*Math.sin(Math.PI/6);
+                TLX += length*Math.cos(Math.PI/6);
             }
         }
     }
@@ -80,21 +132,22 @@ class LeftSide extends JComponent {
 
 class RightSide extends JComponent {
     protected double length, X, Y;
-    protected Color color;
+    protected Color[] colors = new Color[9];
     
-    public RightSide(double X, double Y, double length, Color color){
-        this.length = length; this.color = color;
+    public RightSide(double X, double Y, double length, Color[] colors){
+        this.length = length; this.colors = colors;
         this.X = X; this.Y = Y;
     }
     
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (double i = 0; i < 3; i++) {
-            double TLY = Y - length*Math.sin(Math.PI/6)*i, TLX = X + length*Math.cos(Math.PI/6)*i;
-            for (double j = 0; j < 3; j++) {
-                ParaRight right = new ParaRight(TLX,TLY,length,color);
+        for (int i = 0; i < 3; i++) {
+            double TLX = X, TLY = Y + length*i;
+            for (int j = 0; j < 3; j++) {
+                ParaRight right = new ParaRight(TLX,TLY,length,colors[i*3+j]);
                 right.paintComponent(g);
-                TLY -= length;
+                TLX += Math.cos(Math.PI/6)*length;
+                TLY -= Math.sin(Math.PI/6)*length;
             }
         }
     }
@@ -102,22 +155,22 @@ class RightSide extends JComponent {
 
 class TopSide extends JComponent {
     protected double length, X, Y;
-    protected Color color;
+    protected Color[] colors = new Color[9];
 
-    public TopSide(double X, double Y, double length, Color color){
-        this.length = length; this.color = color;
+    public TopSide(double X, double Y, double length, Color[]colors){
+        this.length = length; this.colors = colors;
         this.X = X; this.Y = Y;
     }
 
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        for (double i = 0; i < 3; i++) {
-            double TLY = Y + Math.sin(Math.PI/6)*length*i, TLX = X + Math.cos(Math.PI/6)*length*i;
-            for (double j = 0; j < 3; j++) {
-                ParaTop top = new ParaTop(TLX,TLY,length,Color.RED);
+        for (int i = 0; i < 3; i++) {
+            double TLY = Y + Math.sin(Math.PI/6)*length*i, TLX = X - Math.cos(Math.PI/6)*length*i;
+            for (int j = 0; j < 3; j++) {
+                ParaTop top = new ParaTop(TLX,TLY,length,colors[i*3+j]);
                 top.paintComponent(g);
-                TLY -= length*Math.sin(Math.PI/6);
                 TLX += length*Math.cos(Math.PI/6);
+                TLY += length*Math.sin(Math.PI/6);
             }
         }
     }
@@ -141,7 +194,7 @@ class ParaLeft extends JComponent {
     public void paintComponent(Graphics g){
         super.paintComponent(g); Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(this.color); g2d.fill(parallelogram);
-        g2d.setColor(Color.WHITE); g2d.setStroke(new java.awt.BasicStroke(1));
+        g2d.setColor(Color.BLACK); g2d.setStroke(new java.awt.BasicStroke(1));
         g2d.draw(parallelogram);
     }
 }
@@ -164,7 +217,7 @@ class ParaRight extends JComponent {
     public void paintComponent(Graphics g){
         super.paintComponent(g); Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(this.color); g2d.fill(parallelogram);
-        g2d.setColor(Color.WHITE); g2d.setStroke(new java.awt.BasicStroke(1));
+        g2d.setColor(Color.BLACK); g2d.setStroke(new java.awt.BasicStroke(1));
         g2d.draw(parallelogram);
     }    
 }    
@@ -187,7 +240,7 @@ class ParaTop extends JComponent {
     public void paintComponent(Graphics g){
         super.paintComponent(g); Graphics2D g2d = (Graphics2D)g;
         g2d.setColor(this.color); g2d.fill(parallelogram);
-        g2d.setColor(Color.WHITE); g2d.setStroke(new java.awt.BasicStroke(1));
+        g2d.setColor(Color.BLACK); g2d.setStroke(new java.awt.BasicStroke(1));
         g2d.draw(parallelogram);
     }
 }
