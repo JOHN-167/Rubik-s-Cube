@@ -10,9 +10,6 @@ import java.awt.event.KeyListener; import java.awt.event.KeyEvent;
 import java.awt.event.ActionListener; import java.awt.event.ActionEvent;
 import java.awt.FlowLayout; import java.awt.GridLayout;
 
-//Consider using abstraction to define color for cubes
-
-
 public class Rubik extends JFrame {
 
     public Rubik() {
@@ -84,6 +81,16 @@ class Canvas extends JPanel {
                 colors[j+1][i] = colors[j][i];
             colors[0][i] = tmp;
         }
+        Color tmp = colors[5][0];
+        colors[5][0] = colors[5][6];
+        colors[5][6] = colors[5][8];
+        colors[5][8] = colors[5][2];
+        colors[5][2] = tmp;
+        tmp = colors[5][1];
+        colors[5][1] = colors[5][3];
+        colors[5][3] = colors[5][7];
+        colors[5][7] = colors[5][5];
+        colors[5][5] = tmp;
         repaint();
     }
     public void bottomLeft(){
@@ -93,18 +100,193 @@ class Canvas extends JPanel {
                 colors[j][i] = colors[j+1][i];
             colors[4][i] = tmp;
         }
+        Color tmp = colors[5][0];
+        colors[5][0] = colors[5][2];
+        colors[5][2] = colors[5][8];
+        colors[5][8] = colors[5][6];
+        colors[5][6] = tmp;
+        tmp = colors[5][1];
+        colors[5][1] = colors[5][5];
+        colors[5][5] = colors[5][7];
+        colors[5][7] = colors[5][3];
+        colors[5][3] = tmp;
         repaint();
     }
-    public void midRight(){}
-    public void midLeft(){}
-    public void topRight(){}
-    public void topLeft(){}
-    public void leftDown(){}
-    public void leftUp(){}
-    public void midDown(){}
-    public void midUp(){}
-    public void rightDown(){}
-    public void rightUp(){}
+    public void midRight(){
+        for (int i = 3; i < 6; i++){
+            Color tmp = colors[3][i];
+            for (int j = 2; j >= 0; j--)
+                colors[j+1][i] = colors[j][i];
+            colors[0][i] = tmp;
+        }
+        repaint();
+    }
+    public void midLeft(){
+        for (int i = 3; i < 6; i++){
+            Color tmp = colors[0][i];
+            for (int j = 0; j < 4; j++)
+                colors[j][i] = colors[j+1][i];
+            colors[4][i] = tmp;
+        }
+        repaint();
+    }
+    public void topRight(){
+        for (int i = 0; i < 3; i++){
+            Color tmp = colors[3][i];
+            for (int j = 2; j >= 0; j--)
+                colors[j+1][i] = colors[j][i];
+            colors[0][i] = tmp;
+        }
+        Color tmp = colors[4][0];
+        colors[4][0] = colors[4][2];
+        colors[4][2] = colors[4][8];
+        colors[4][8] = colors[4][6];
+        colors[4][6] = tmp;
+        tmp = colors[4][1];
+        colors[4][1] = colors[4][5];
+        colors[4][5] = colors[4][7];
+        colors[4][7] = colors[4][3];
+        colors[4][3] = tmp;
+        repaint();
+    }
+    public void topLeft(){
+        for (int i = 0; i < 3; i++){
+            Color tmp = colors[0][i];
+            for (int j = 0; j < 4; j++)
+                colors[j][i] = colors[j+1][i];
+            colors[4][i] = tmp;
+        }
+        Color tmp = colors[4][0];
+        colors[4][0] = colors[4][6];
+        colors[4][6] = colors[4][8];
+        colors[4][8] = colors[4][2];
+        colors[4][2] = tmp;
+        tmp = colors[4][1];
+        colors[4][1] = colors[4][3];
+        colors[4][3] = colors[4][7];
+        colors[4][7] = colors[4][5];
+        colors[4][5] = tmp;
+        repaint();
+    }
+    public void leftDown(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3];
+            colors[0][j*3] = colors[4][j*3];
+            colors[4][j*3] = colors[2][j*3];
+            colors[2][j*3] = colors[500000][j*3];
+            colors[5][j*3] = tmp;
+        }
+        repaint();
+    }
+    public void leftUp(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3];
+            colors[0][j*3] = colors[5][j*3];
+            colors[5][j*3] = colors[2][j*3];
+            colors[2][j*3] = colors[4][j*3];
+            colors[4][j*3] = tmp;
+        }
+        repaint();
+    }
+    public void midDown(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[0][j*3+1] = colors[4][j*3+1];
+            colors[4][j*3+1] = colors[2][j*3+1];
+            colors[2][j*3+1] = colors[5][j*3+1];
+            colors[5][j*3+1] = tmp;
+        }
+        repaint();
+    }
+    public void midUp(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[0][j*3+1] = colors[5][j*3+1];
+            colors[5][j*3+1] = colors[2][j*3+1];
+            colors[2][j*3+1] = colors[4][j*3+1];
+            colors[4][j*3+1] = tmp;
+        }
+        repaint();
+    }
+    public void rightDown(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+2];
+            colors[0][j*3+2] = colors[4][j*3+2];
+            colors[4][j*3+2] = colors[2][j*3+2];
+            colors[2][j*3+2] = colors[5][j*3+2];
+            colors[5][j*3+2] = tmp;
+        }
+        repaint();
+    }
+    public void rightUp(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+2];
+            colors[0][j*3+2] = colors[5][j*3+2];
+            colors[5][j*3+2] = colors[2][j*3+2];
+            colors[2][j*3+2] = colors[4][j*3+2];
+            colors[4][j*3+2] = tmp;
+        }
+        repaint();
+    }
+    public void sideFrontRight(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[1][j*3] = colors[4][j*3];
+            colors[4][j*3] = colors[3][j*3];
+            colors[3][j*3] = colors[5][j*3];
+            colors[5][j*3] = tmp;
+        }
+    }
+    public void sideFrontLeft(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[0][j*3] = colors[4][j*3];
+            colors[4][j*3] = colors[2][j*3];
+            colors[2][j*3] = colors[5][j*3];
+            colors[5][j*3] = tmp;
+        }
+        repaint();
+    }
+    public void sideMidRight(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[1][j*3+1] = colors[4][j*3+1];
+            colors[4][j*3+1] = colors[3][j*3+1];
+            colors[3][j*3+1] = colors[5][j*3+1];
+            colors[5][j*3+1] = tmp;
+        }
+        repaint();
+    }
+    public void sideMidLeft(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[1][j*3+1];
+            colors[1][j*3+1] = colors[5][j*3+1];
+            colors[5][j*3+1] = colors[3][j*3+1];
+            colors[3][j*3+1] = colors[4][j*3+1];
+            colors[4][j*3+1] = tmp;
+        }
+        repaint();
+    }
+    public void sideBackRight(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[0][j*3+1];
+            colors[1][j*3+2] = colors[4][j*3+2];
+            colors[4][j*3+2] = colors[3][j*3+2];
+            colors[3][j*3+2] = colors[5][j*3+2];
+            colors[5][j*3+2] = tmp;
+        }
+        repaint();
+    }
+    public void sideBackLeft(){
+        for (int j = 0; j < 3; j++){
+            Color tmp = colors[1][j*3+1];
+            colors[1][j*3+2] = colors[5][j*3+2];
+            colors[5][j*3+2] = colors[3][j*3+2];
+            colors[3][j*3+2] = colors[4][j*3+2];
+            colors[4][j*3+2] = tmp;
+        }
+        repaint();
+    }
 }
 
 class LeftSide extends JComponent {
@@ -244,4 +426,3 @@ class ParaTop extends JComponent {
         g2d.draw(parallelogram);
     }
 }
- 
